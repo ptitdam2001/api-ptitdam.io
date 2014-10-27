@@ -1,0 +1,4 @@
+api-ptitdam.io
+==============
+
+Scala - Play2 API which uses a MongoDb database to read/write articles
