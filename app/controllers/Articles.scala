@@ -1,6 +1,7 @@
 package controllers
 
 import org.slf4j._
+import play.api.libs.json.Json
 import play.api.mvc._
 import play.modules.reactivemongo.MongoController
 import play.modules.reactivemongo.json.collection.JSONCollection
@@ -15,11 +16,10 @@ object Articles extends Controller with MongoController {
 
   def collection: JSONCollection = db[JSONCollection]("articles")
 
-  import models._
-  import models.ArticleFormat._
+  import models.MongoArticle
 
   def create = Action.async(parse.json) { request =>
-    request.body.validate[Article].map {
+    request.body.validate[MongoArticle].map {
       article =>
         // `user` is an instance of the case class `models.User`
         collection.insert(article).map {
@@ -28,5 +28,15 @@ object Articles extends Controller with MongoController {
             Created(s"Article Created")
         }
     }.getOrElse(Future.successful(BadRequest("invalid json")))
+  }
+
+  def getAll = Action.async {request =>
+    val cursor = collection.find(Json.obj()).cursor[MongoArticle]
+
+    val futureArticlesList: Future[List[MongoArticle]] = cursor.collect[List]()
+
+    futureArticlesList.map { articles =>
+      Ok(Json.obj("articles" -> (articles map MongoArticle.format.writes)))
+    }
   }
 }

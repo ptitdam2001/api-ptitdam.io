@@ -3,12 +3,14 @@
 # ~~~~
 
 # Home page
-GET         /                    controllers.Application.index
+GET         /                       controllers.Application.index
 
 
 #Article routes
-POST        /create              controllers.Articles.create
+POST        /articles/create        controllers.Articles.create
+GET         /articles               controllers.Articles.getAll
+
 
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file        controllers.Assets.at(path="/public", file)
+GET         /assets/*file           controllers.Assets.at(path="/public", file)
